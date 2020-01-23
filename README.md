@@ -11,15 +11,21 @@
 When using this webcrawler it should be very simple and straight forward to import and run.
 
 If this is implemented using Python I would expect to use it by simply doing:
-```import Webcrawler from "Webcrawler.py"```
-```crawler = Webcrawler('http://wiprodigital.com')```
-```crawler.sitemap```
-```crawler.externallinks```
-```crawler.contenturls```
+
+```
+import Webcrawler from "Webcrawler.py"
+crawler = Webcrawler('http://wiprodigital.com')
+crawler.sitemap
+crawler.externallinks
+crawler.contenturls
+```
 
 If this is implemented in Nodejs I would expect to use it by simply doing:
-```const webcrawler = require("Webcrawler.js")```
-```let crawler = new Webcrawler('http://wiprodigital.com')```
-```crawler.sitemap```
-```crawler.externallinks```
-```crawler.contenturls```
+
+```
+const webcrawler = require("Webcrawler.js")
+let crawler = new Webcrawler('http://wiprodigital.com')
+crawler.sitemap
+crawler.externallinks
+crawler.contenturls
+```
