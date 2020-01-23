@@ -13,7 +13,7 @@ When using this webcrawler it should be very simple and straight forward to impo
 If this is implemented using Python I would expect to use it by simply doing:
 
 ```
-import Webcrawler from "Webcrawler.py"
+from Webcrawler import Webcrawler
 crawler = Webcrawler('http://wiprodigital.com')
 crawler.sitemap
 crawler.externallinks
