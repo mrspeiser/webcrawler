@@ -25,7 +25,9 @@ If this is implemented in Nodejs I would expect to use it by simply doing:
 ```
 const webcrawler = require("Webcrawler.js")
 let crawler = new Webcrawler('http://wiprodigital.com')
-crawler.sitemap
-crawler.externallinks
-crawler.contenturls
+crawler.on('done', (crawler) => {
+  crawler.sitemap
+  crawler.externallinks
+  crawler.contenturls
+}
 ```
