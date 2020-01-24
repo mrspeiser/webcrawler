@@ -71,9 +71,12 @@ class test_PageNode(unittest.TestCase):
   def test_html_document(self):
     crawler1 = Webcrawler(test_Webcrawler.default_url)
     pagenode0 = PageNode(crawler1.url, crawler1.response)
-    print(dir(pagenode0.response))
-    print(pagenode0.response.content) 
-    print(pagenode0.response.links) 
+    self.assertIsNotNone(pagenode0.response.content)
+
+  def test_internal_links(self):
+    crawler1 = Webcrawler(test_Webcrawler.default_url)
+    pagenode0 = PageNode(crawler1.url, crawler1.response)
+    self.assertIsNot(len(pagenode0.sitelinks), 0)
 
 if __name__ == '__main__':
   unittest.main()

@@ -1,4 +1,6 @@
 import requests
+import re
+from bs4 import BeautifulSoup
 
 class Webcrawler():
   request_count = 0
@@ -52,9 +54,28 @@ class Webcrawler():
       return False
 
   def autorun(self):
-    return self.get_url(self.discoverables.pop(0))
+    self.discoverable.append(self.url)
+    while len(self.discoverable) is not 0:
+      self.get_url(self.discoverable.pop(0))
+
+
 
 class PageNode():
+
+  """
+    The PageNode class represents a page that has been crawled by the Webcrawler
+    
+    Required Parameters:
+      1. The URL that was used to make the request
+      2. The response from the requests.get() call
+
+    Important Data Properties:
+      1. self.sitelinks: A list of hrefs from <a> tags that have that matches the qualified domain name of the URL e.g: "wiprodigital.com"
+      2. self.externallinks: A list of hrefs from <a> tags that DO NOT match  the qualified domain name of the URL e.g: "wiprodigital.com"
+      3. self.contentlinks: A list of src attributes from img tags
+
+  """
+
   total_nodes = 0
   num_nodes = 0
 
@@ -72,6 +93,30 @@ class PageNode():
     self.node_id = PageNode.total_nodes
     PageNode.total_nodes += 1
     PageNode.num_nodes += 1
+    self.soup = BeautifulSoup(response.content, 'html.parser') 
+    self.scan_hrefs()
+    self.scan_content_links()
 
   def __del__(self):
     PageNode.num_nodes -= 1 
+
+  def scan_hrefs(self):
+    atags = self.soup.find_all("a")
+    hrefs = [ link.attrs['href'] for link in atags ]
+    qdn = re.search("://", self.node_url)
+    if qdn is not None:
+      span = qdn.span()[1]
+      qdn = self.node_url[int(span)::]
+      qdn = qdn.split('/')[0]
+
+    uniquelinks = set(hrefs)
+    for i in uniquelinks:
+      x = re.search(qdn, i)
+      if x is not None:
+        self.sitelinks.append(i)
+      else:
+        self.externallinks.append(i)
+
+  def scan_content_links(self):
+    srcs = [ img['src'] for img in self.soup.find_all("img") ]
+    self.contentlinks = set(srcs)
