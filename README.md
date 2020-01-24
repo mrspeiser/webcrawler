@@ -31,3 +31,14 @@ crawler.on('done', (crawler) => {
   console.log(crawler.contenturls);
 })
 ```
+
+#### Testing:
+
+To see if the crawler in Python is working:
+1. navigate to the python directory
+2. run ``` python test_Webcrawler.py ``` 
+
+
+To see if the crawler in Javascript is working:
+1. navigate to the nodejs directory
+2. run ``` npm test ``` 
