@@ -125,3 +125,4 @@ sitemap = {
 1. The Webcrawler isn't finished and with more time I would have actually finished the functionality to actually visit each url discovered and fully finished the sitemap.
 2. There are also issues with discovering urls with hash values attached to them that needs to be addressed
 3. Cleanup and refactoring with PageNode class. I thought I wanted to recursively discover additional pages by having the PageNode itself discover the pages that it had internally. Now though I think it would be more straight forward with building the sitemap from the webcrawler class and allow the PageNode to just be a representation attached to the sitemap.
+4. Created a cleaner visualization of the sitemap dictionary with arrows pointing to where the urls go to. Also if the same links were found on different pages I would want to link the '_pagenode' to the originally discovered PageNode.
