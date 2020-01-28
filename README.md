@@ -54,7 +54,7 @@ To see if the crawler in Javascript is working:
 #### Actual Implementation Details:
 
 
-The crawler was utlimately implemented with Python mainly because of not having to deal with extra async await calls for nodejs. Testing seemed a bit more straight forward and simpler to implement in a shorter amount of time.
+The crawler was utlimately implemented with **Python** mainly because of not having to deal with extra async await calls for nodejs. Testing seemed a bit more straight forward and simpler to implement in a shorter amount of time.
 
 ##### Requirements:
 
