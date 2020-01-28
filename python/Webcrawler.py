@@ -44,7 +44,7 @@ class Webcrawler():
   def analyze_response(self):
     if self.response.status_code == 200:
       self.success = True
-      page = PageNode(self.url, self.response)
+      page = PageNode(self.url, self.response, )
       self.pagenodes.append(page)
       discoverables = [ x for x in page.sitelinks if x not in self.visited ]
       self.discoverable += discoverables
@@ -58,12 +58,27 @@ class Webcrawler():
     while len(self.discoverable) is not 0:
       self.get_url(self.discoverable.pop(0))
 
+# every url is a dictionary that is required to have a _pagenode key
+#self.sitemap = { #  "http://wiprodigil.com": { 
+#    "disocveredurl": {
+#        "innerdiscoveredurl": {
+#          "innerinnerdisc": {
+#            "pagenode":PageNode
+#          },
+#          "pagenode":PageNode
+#        },
+#        "pagenode"PageNode
+#      }
+#    "pagenode":PageNode
+#    }
+#  }
 
-
-class PageNode():
+class PageNode(Webcrawler):
 
   """
     The PageNode class represents a page that has been crawled by the Webcrawler
+
+    The PageNode has the ability to spawn new Webrawlers because itself is also a Webcrawler by inheriting its methods and properties;
     
     Required Parameters:
       1. The URL that was used to make the request
@@ -79,10 +94,10 @@ class PageNode():
   total_nodes = 0
   num_nodes = 0
 
-  def __init__(self, url, response):
+  def __init__(self, url, response, Parent=None):
     self.node_url = url
     self.response = response
-    self._parent = None  
+    self._parent = Parent  
     self._children = None
     self.sitelinks = []
     self.externallinks = []
@@ -114,9 +129,14 @@ class PageNode():
       x = re.search(qdn, i)
       if x is not None:
         self.sitelinks.append(i)
+        
       else:
         self.externallinks.append(i)
 
   def scan_content_links(self):
     srcs = [ img['src'] for img in self.soup.find_all("img") ]
     self.contentlinks = set(srcs)
+
+  def get_children(self):
+    for link in self.sitelinks:
+      self.get_url(link)
