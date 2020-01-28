@@ -5,22 +5,30 @@ from bs4 import BeautifulSoup
 class Webcrawler():
   request_count = 0
   
-  def __init__(self, root_url=None, SITEMAP={}, AUTORUN=False):
+  def __init__(self, root_url=None, SITEMAP={}, Response=None, AUTORUN=False):
     self.url = root_url
     self.sitemap = SITEMAP
+    self.currentnode = ""
+    self.sitelinks = []
     self.externallinks = []
     self.contentlinks = []
+    self.htmlcontent = []
+    self.javascriptlinks = []
+    self.csslinks = []
     self.discoverable = []
     self.visited = []
     self.url_history = []
     self.response_history = []
     self.pagenodes = []
-    self.response = None
+    self.response = Response
     self.success = None
+    self._parent = None  
+    self._children = None
     self.autorun = AUTORUN
 
     if self.url is not None: 
       self.sitemap[self.url] = {'pageNode':None}
+      self.currentnode = self.sitemap[self.url]
       self.get_url()
       if self.autorun is True:
         self.autorun()
@@ -30,11 +38,13 @@ class Webcrawler():
       self.url = url
     try:
       if self.url not in self.visited:
+        print(f'getting {self.url}')
         self.response = requests.get(self.url)
         self.visited.append(self.url)
         self.response_history.append(self.response)
         self.analyze_response()  
         Webcrawler.request_count += 1
+        self.update_sitemap()
         return True
     except requests.exceptions.MissingSchema as requests_error:
       print('error, no url schema, bad request')
@@ -44,7 +54,7 @@ class Webcrawler():
   def analyze_response(self):
     if self.response.status_code == 200:
       self.success = True
-      page = PageNode(self.url, self.response, )
+      page = PageNode(self.url, self.response)
       self.pagenodes.append(page)
       discoverables = [ x for x in page.sitelinks if x not in self.visited ]
       self.discoverable += discoverables
@@ -53,13 +63,18 @@ class Webcrawler():
       self.success = False
       return False
 
+  def update_sitemap(self):
+    for link in self.discoverable:
+      self.currentnode[link] = {'_pagenode':None} 
+
   def autorun(self):
     self.discoverable.append(self.url)
     while len(self.discoverable) is not 0:
       self.get_url(self.discoverable.pop(0))
 
 # every url is a dictionary that is required to have a _pagenode key
-#self.sitemap = { #  "http://wiprodigil.com": { 
+#self.sitemap = {   
+#  "http://wiprodigil.com": { 
 #    "disocveredurl": {
 #        "innerdiscoveredurl": {
 #          "innerinnerdisc": {
@@ -72,7 +87,7 @@ class Webcrawler():
 #    "pagenode":PageNode
 #    }
 #  }
-
+#self.sitemap = { "rootnode": {"_pagenode":None}}
 class PageNode(Webcrawler):
 
   """
@@ -95,22 +110,15 @@ class PageNode(Webcrawler):
   num_nodes = 0
 
   def __init__(self, url, response, Parent=None):
+    super().__init__(self, Response=response)
     self.node_url = url
-    self.response = response
-    self._parent = Parent  
-    self._children = None
-    self.sitelinks = []
-    self.externallinks = []
-    self.contentlinks = []
-    self.htmlcontent = []
-    self.javascriptlinks = []
-    self.csslinks = []
     self.node_id = PageNode.total_nodes
     PageNode.total_nodes += 1
     PageNode.num_nodes += 1
     self.soup = BeautifulSoup(response.content, 'html.parser') 
     self.scan_hrefs()
     self.scan_content_links()
+    #self.get_children()
 
   def __del__(self):
     PageNode.num_nodes -= 1 
@@ -140,3 +148,4 @@ class PageNode(Webcrawler):
   def get_children(self):
     for link in self.sitelinks:
       self.get_url(link)
+

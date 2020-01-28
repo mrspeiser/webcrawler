@@ -5,7 +5,8 @@
 - [Testing](#testing)
 - [Actual Implementation](#actual-implementation-details)
 - [Requirements](#requirements)
-- [Classes](#classes)
+- [Sitemap](#sitemap)
+- [With More Time](#with-more-time)
 
 #### Specification:
 1. The crawler should be limited to one domain "http://wiprodigital.com"
@@ -78,4 +79,49 @@ print(crawler.pagenodes[0].contentlinks)
 
 Once the crawler finishes discovering a page it will add all the sitelinks from the PageNode to the "discoverable" property that are not already present in the "visited" property to ensure that the crawler doesn't go to the same page more than once.
 
-**The Sitemap has not been implemented yet**
+**The Sitemap has not been fully implemented yet**
+
+##### SiteMap
+
+The sitemap is intended to be implemented as a nested dictionary.
+
+The first key representing the root_url of the tree like data structure.
+
+Each url named key has a value that is a dictionary that has a default '_pagenode' key, and all other sibling keys inside representing the site links that were discovered for that outer key url.
+
+```
+sitemap = {
+  'root_url': {
+    '_pagenode':None,
+    'site_url1': {
+      '_pagenode:None,
+      'unique_inner_url1': {
+        '_pagenode:None,
+      },
+      'unique_inner_url2': {
+        '_pagenode:None,
+      },
+    }
+    'site_url2': {
+      '_pagenode:None,
+      'unique_inner_url2-1': {
+        '_pagenode:None,
+    }
+    'site_url3': {
+      '_pagenode:None,
+      'unique_inner_url3-1': {
+        '_pagenode:None,
+      },
+      'unique_inner_url3-2': {
+        '_pagenode:None,
+      },
+    }
+  }
+}
+```
+
+##### With More Time
+
+1. The Webcrawler isn't finished and with more time I would have actually finished the functionality to actually visit each url discovered and fully finished the sitemap.
+2. There are also issues with discovering urls with hash values attached to them that needs to be addressed
+3. Cleanup and refactoring with PageNode class. I thought I wanted to recursively discover additional pages by having the PageNode itself discover the pages that it had internally. Now though I think it would be more straight forward with building the sitemap from the webcrawler class and allow the PageNode to just be a representation attached to the sitemap.
